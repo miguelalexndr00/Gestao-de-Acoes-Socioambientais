@@ -1,0 +1,2 @@
+public class SistemaVoluntarioTest {
+}
