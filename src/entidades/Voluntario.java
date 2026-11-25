@@ -5,12 +5,21 @@ import java.util.List;
 import java.util.Objects;
 
 public class Voluntario {
-    private String nome;
-    private final String email; // chave de identificação, não muda
-    private String matricula;
+    private final String nome;
+    private final String email;
+    private final String matricula;
     private final List<Acao> acoesParticipando = new ArrayList<>();
 
     public Voluntario(String nome, String email, String matricula) {
+        if (nome == null || nome.isBlank()) {
+            throw new IllegalArgumentException("Nome é obrigatório");
+        }
+        if (email == null || email.isBlank()) {
+            throw new IllegalArgumentException("E-mail é obrigatório");
+        }
+        if (matricula == null || matricula.isBlank()) {
+            throw new IllegalArgumentException("Matrícula é obrigatória");
+        }
         this.nome = nome;
         this.email = email;
         this.matricula = matricula;
@@ -24,16 +33,14 @@ public class Voluntario {
         return acoesParticipando.size();
     }
 
-    // Pontuação acumulada = soma da pontuação de cada ação que participa
     public int getPontuacaoAcumulada() {
         int total = 0;
         for (Acao acao : acoesParticipando) {
-            total += acao.calcularPontuacao(); // aqui usa o polimorfismo
+            total += acao.calcularPontuacao();
         }
         return total;
     }
 
-    // Chamado pela Acao quando a inscrição é aceita
     void adicionarAcao(Acao acao) {
         if (!acoesParticipando.contains(acao)) {
             acoesParticipando.add(acao);
@@ -46,7 +53,6 @@ public class Voluntario {
                 " | Pontuação: " + getPontuacaoAcumulada();
     }
 
-    // Dois voluntários são iguais se tiverem o mesmo e-mail
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

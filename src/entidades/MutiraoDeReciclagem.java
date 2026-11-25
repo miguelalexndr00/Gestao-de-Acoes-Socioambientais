@@ -1,14 +1,16 @@
 package entidades;
 
-// MutiraoDeReciclagem.java
 import java.time.LocalDateTime;
 
 public class MutiraoDeReciclagem extends Acao {
-    private int duracaoHoras;
+    private final int duracaoHoras;
 
     public MutiraoDeReciclagem(int id, String titulo, String descricao,
                                LocalDateTime data, int maxParticipantes, int duracaoHoras) {
         super(id, titulo, descricao, data, maxParticipantes);
+        if (duracaoHoras <= 0) {
+            throw new IllegalArgumentException("Duração deve ser maior que zero");
+        }
         this.duracaoHoras = duracaoHoras;
     }
 
@@ -16,7 +18,7 @@ public class MutiraoDeReciclagem extends Acao {
 
     @Override
     public int calcularPontuacao() {
-        return 4 * duracaoHoras; // 4 pontos por hora
+        return 4 * duracaoHoras;
     }
 
     @Override

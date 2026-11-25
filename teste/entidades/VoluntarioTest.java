@@ -1,111 +1,82 @@
 package entidades;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class VoluntarioTest {
 
-    @Test
-    void testarGetNome() {
-        Voluntario voluntario = new Voluntario(
-                "Miguel",
-                "miguel@email.com",
-                "123"
-        );
+    private static final LocalDateTime DATA = LocalDateTime.of(2026, 12, 5, 9, 0);
 
+    private Voluntario voluntario;
+
+    @BeforeEach
+    void setUp() {
+        voluntario = new Voluntario("Miguel", "miguel@email.com", "123");
+    }
+
+    @Test
+    void deveRetornarDadosCadastrados() {
         assertEquals("Miguel", voluntario.getNome());
-    }
-
-    @Test
-    void testarGetEmail() {
-        Voluntario voluntario = new Voluntario(
-                "Miguel",
-                "miguel@email.com",
-                "123"
-        );
-
         assertEquals("miguel@email.com", voluntario.getEmail());
-    }
-
-    @Test
-    void testarGetMatricula() {
-        Voluntario voluntario = new Voluntario(
-                "Miguel",
-                "miguel@email.com",
-                "123"
-        );
-
         assertEquals("123", voluntario.getMatricula());
     }
 
     @Test
-    void testarQuantidadeAcoes() {
-        Voluntario voluntario = new Voluntario(
-                "Miguel",
-                "miguel@email.com",
-                "123"
-        );
-
+    void deveIniciarSemAcoesESemPontos() {
         assertEquals(0, voluntario.getQuantidadeAcoes());
-    }
-
-    @Test
-    void testarPontuacaoAcumulada() {
-        Voluntario voluntario = new Voluntario(
-                "Miguel",
-                "miguel@email.com",
-                "123"
-        );
-
         assertEquals(0, voluntario.getPontuacaoAcumulada());
+        assertEquals("Nome: Miguel | Ações: 0 | Pontuação: 0", voluntario.exibirDetalhes());
     }
 
     @Test
-    void testarExibirDetalhes() {
-        Voluntario voluntario = new Voluntario(
-                "Miguel",
-                "miguel@email.com",
-                "123"
-        );
+    void deveSomarPontuacaoDasAcoesInscritas() {
+        Acao plantio = new PlantioDeMudas(1, "Plantio", "desc", DATA, 10, 3);      // 11
+        Acao mutirao = new MutiraoDeReciclagem(2, "Mutirão", "desc", DATA, 10, 2); // 8
+        Acao oficina = new OficinaEcologica(3, "Oficina", "desc", DATA, 10, 2, true); // 16
 
-        assertEquals(
-                "Nome: Miguel | Ações: 0 | Pontuação: 0",
-                voluntario.exibirDetalhes()
-        );
+        plantio.inscrever(voluntario);
+        mutirao.inscrever(voluntario);
+        oficina.inscrever(voluntario);
+
+        assertEquals(3, voluntario.getQuantidadeAcoes());
+        assertEquals(35, voluntario.getPontuacaoAcumulada());
+        assertEquals("Nome: Miguel | Ações: 3 | Pontuação: 35", voluntario.exibirDetalhes());
     }
 
     @Test
-    void testarEquals() {
-        Voluntario voluntario1 = new Voluntario(
-                "Miguel",
-                "miguel@email.com",
-                "123"
-        );
+    void naoDeveContarAMesmaAcaoDuasVezes() {
+        Acao mutirao = new MutiraoDeReciclagem(1, "Mutirão", "desc", DATA, 10, 2);
 
-        Voluntario voluntario2 = new Voluntario(
-                "Outro nome",
-                "MIGUEL@email.com",
-                "456"
-        );
+        mutirao.inscrever(voluntario);
+        voluntario.adicionarAcao(mutirao); // package-private, acessível no mesmo pacote
 
-        assertEquals(voluntario1, voluntario2);
+        assertEquals(1, voluntario.getQuantidadeAcoes());
+        assertEquals(8, voluntario.getPontuacaoAcumulada());
     }
 
     @Test
-    void testarHashCode() {
-        Voluntario voluntario1 = new Voluntario(
-                "Miguel",
-                "miguel@email.com",
-                "123"
-        );
+    void emailIgualIgnorandoMaiusculasDeveSerIgual() {
+        Voluntario outro = new Voluntario("Outro nome", "MIGUEL@email.com", "456");
 
-        Voluntario voluntario2 = new Voluntario(
-                "Outro nome",
-                "MIGUEL@email.com",
-                "456"
-        );
+        assertEquals(voluntario, outro);
+        assertEquals(voluntario.hashCode(), outro.hashCode());
+    }
 
-        assertEquals(voluntario1.hashCode(), voluntario2.hashCode());
+    @Test
+    void emailDiferenteDeveSerDiferente() {
+        Voluntario outro = new Voluntario("Miguel", "outro@email.com", "123");
+
+        assertNotEquals(voluntario, outro);
+    }
+
+    @Test
+    void deveRejeitarDadosObrigatoriosVazios() {
+        assertThrows(IllegalArgumentException.class, () -> new Voluntario("", "a@email.com", "1"));
+        assertThrows(IllegalArgumentException.class, () -> new Voluntario("Ana", " ", "1"));
+        assertThrows(IllegalArgumentException.class, () -> new Voluntario("Ana", "a@email.com", null));
     }
 }

@@ -1,5 +1,8 @@
 package entidades;
 
+import excecoes.AcaoLotadaException;
+import excecoes.InscricaoDuplicadaException;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -8,13 +11,22 @@ import java.util.Objects;
 
 public abstract class Acao {
     private final int id;
-    private String titulo;
-    private String descricao;
-    private LocalDateTime data;
-    private int maxParticipantes;
+    private final String titulo;
+    private final String descricao;
+    private final LocalDateTime data;
+    private final int maxParticipantes;
     private final List<Voluntario> inscritos = new ArrayList<>();
 
     public Acao(int id, String titulo, String descricao, LocalDateTime data, int maxParticipantes) {
+        if (titulo == null || titulo.isBlank()) {
+            throw new IllegalArgumentException("Título é obrigatório");
+        }
+        if (data == null) {
+            throw new IllegalArgumentException("Data é obrigatória");
+        }
+        if (maxParticipantes <= 0) {
+            throw new IllegalArgumentException("Capacidade máxima deve ser maior que zero");
+        }
         this.id = id;
         this.titulo = titulo;
         this.descricao = descricao;
@@ -22,10 +34,8 @@ public abstract class Acao {
         this.maxParticipantes = maxParticipantes;
     }
 
-    // MÉTODO ABSTRATO: cada filha calcula de um jeito. É o polimorfismo.
     public abstract int calcularPontuacao();
 
-    // Cada filha completa com seus atributos específicos
     protected abstract String getDetalhesEspecificos();
 
     public int getId() { return id; }
@@ -45,29 +55,26 @@ public abstract class Acao {
 
     public void inscrever(Voluntario v) {
         if (jaInscrito(v)) {
-            throw new InscricaoDuplicadaException(v.getEmail(), id);
+            throw new InscricaoDuplicadaException(
+                    "Voluntário " + v.getEmail() + " já inscrito na ação " + id);
         }
         if (estaLotada()) {
-            throw new AcaoLotadaException(id);
+            throw new AcaoLotadaException("Ação " + id + " está lotada");
         }
         inscritos.add(v);
-        v.adicionarAcao(this); // mantém os dois lados sincronizados
+        v.adicionarAcao(this);
     }
 
     public String exibirDetalhes() {
         String dataFormatada = data.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
-        StringBuilder sb = new StringBuilder();
-        sb.append("ID: ").append(id).append(" | Título: ").append(titulo);
-        sb.append("\nDescrição: ").append(descricao);
-        sb.append("\nData: ").append(dataFormatada);
-        sb.append(" | Pontuação: ").append(calcularPontuacao());
-        sb.append("\n").append(getDetalhesEspecificos());
-        sb.append("\nInscritos: ");
-        if (inscritos.isEmpty()) sb.append("nenhum");
-        else {
-            for (Voluntario v : inscritos) sb.append(v.getNome()).append("; ");
-        }
-        return sb.toString();
+        List<String> nomes = new ArrayList<>();
+        for (Voluntario v : inscritos) nomes.add(v.getNome());
+
+        return "ID: " + id + " | Título: " + titulo
+                + "\nDescrição: " + descricao
+                + "\nData: " + dataFormatada + " | Pontuação: " + calcularPontuacao()
+                + "\n" + getDetalhesEspecificos()
+                + "\nInscritos: " + (nomes.isEmpty() ? "nenhum" : String.join("; ", nomes));
     }
 
     @Override

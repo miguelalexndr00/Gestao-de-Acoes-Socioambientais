@@ -2,15 +2,17 @@ package entidades;
 
 import java.time.LocalDateTime;
 
-// OficinaEcologica.java
 public class OficinaEcologica extends Acao {
-    private int duracaoHoras;
-    private boolean kitMaterial;
+    private final int duracaoHoras;
+    private final boolean kitMaterial;
 
     public OficinaEcologica(int id, String titulo, String descricao,
                             LocalDateTime data, int maxParticipantes,
                             int duracaoHoras, boolean kitMaterial) {
         super(id, titulo, descricao, data, maxParticipantes);
+        if (duracaoHoras <= 0) {
+            throw new IllegalArgumentException("Duração deve ser maior que zero");
+        }
         this.duracaoHoras = duracaoHoras;
         this.kitMaterial = kitMaterial;
     }
@@ -20,13 +22,14 @@ public class OficinaEcologica extends Acao {
 
     @Override
     public int calcularPontuacao() {
-        int pontos = 3 * duracaoHoras; // 3 por hora
-        if (kitMaterial) pontos += 10; // bônus do kit
+        int pontos = 3 * duracaoHoras;
+        if (kitMaterial) pontos += 10;
         return pontos;
     }
 
     @Override
     protected String getDetalhesEspecificos() {
-        return "Tipo: Oficina Ecológica | Duração: " + duracaoHoras + "h | Kit: " + (kitMaterial ? "Sim" : "Não");
+        return "Tipo: Oficina Ecológica | Duração: " + duracaoHoras + "h | Kit: "
+                + (kitMaterial ? "Sim" : "Não");
     }
 }

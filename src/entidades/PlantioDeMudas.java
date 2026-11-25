@@ -2,13 +2,15 @@ package entidades;
 
 import java.time.LocalDateTime;
 
-// PlantioDeMudas.java
 public class PlantioDeMudas extends Acao {
-    private int qtdMudas;
+    private final int qtdMudas;
 
     public PlantioDeMudas(int id, String titulo, String descricao,
                           LocalDateTime data, int maxParticipantes, int qtdMudas) {
         super(id, titulo, descricao, data, maxParticipantes);
+        if (qtdMudas < 0) {
+            throw new IllegalArgumentException("Quantidade de mudas não pode ser negativa");
+        }
         this.qtdMudas = qtdMudas;
     }
 
@@ -16,7 +18,7 @@ public class PlantioDeMudas extends Acao {
 
     @Override
     public int calcularPontuacao() {
-        return 5 + 2 * qtdMudas; // 5 base + 2 por muda
+        return 5 + 2 * qtdMudas;
     }
 
     @Override
