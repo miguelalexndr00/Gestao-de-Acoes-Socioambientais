@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class PlantioMudasTest {
+public class PlantioDeMudasTest {
 
     @Test
     void testarCalculoPontuacao() {
