@@ -18,26 +18,20 @@ public class SistemaAcao {
 
     public int cadastrarPlantio(String titulo, String descricao, String data,
                                 int maxParticipantes, int qtdMudas) {
-        int id = proximoId++;
-        acoes.put(id, new PlantioDeMudas(id, titulo, descricao,
+        return registrar(new PlantioDeMudas(proximoId, titulo, descricao,
                 converterData(data), maxParticipantes, qtdMudas));
-        return id;
     }
 
     public int cadastrarMutirao(String titulo, String descricao, String data,
                                 int maxParticipantes, int duracaoHoras) {
-        int id = proximoId++;
-        acoes.put(id, new MutiraoDeReciclagem(id, titulo, descricao,
+        return registrar(new MutiraoDeReciclagem(proximoId, titulo, descricao,
                 converterData(data), maxParticipantes, duracaoHoras));
-        return id;
     }
 
     public int cadastrarOficina(String titulo, String descricao, String data,
                                 int maxParticipantes, int duracaoHoras, boolean kitMaterial) {
-        int id = proximoId++;
-        acoes.put(id, new OficinaEcologica(id, titulo, descricao,
+        return registrar(new OficinaEcologica(proximoId, titulo, descricao,
                 converterData(data), maxParticipantes, duracaoHoras, kitMaterial));
-        return id;
     }
 
     public boolean inscreverVoluntario(Voluntario voluntario, int idAcao) {
@@ -57,12 +51,23 @@ public class SistemaAcao {
         return a;
     }
 
+    // só consome o ID depois que a ação foi criada com sucesso (sem "buracos" na numeração)
+    private int registrar(Acao acao) {
+        acoes.put(acao.getId(), acao);
+        proximoId++;
+        return acao.getId();
+    }
+
     private LocalDateTime converterData(String data) {
+        if (data == null || data.isBlank()) {
+            throw new IllegalArgumentException("Data é obrigatória");
+        }
+        String d = data.trim();
         try {
-            return LocalDateTime.parse(data);
+            return LocalDateTime.parse(d);
         } catch (DateTimeParseException e) {
             try {
-                return LocalDateTime.parse(data, FORMATO_BR);
+                return LocalDateTime.parse(d, FORMATO_BR);
             } catch (DateTimeParseException e2) {
                 throw new IllegalArgumentException("Data inválida: " + data
                         + " (use 2026-12-05T09:00 ou 05/12/2026 09:00)");

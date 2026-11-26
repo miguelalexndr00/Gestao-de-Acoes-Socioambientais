@@ -10,11 +10,13 @@ public class SistemaVoluntario {
     private final Map<String, Voluntario> voluntarios = new HashMap<>();
 
     public boolean cadastrarVoluntario(String nome, String email, String matricula) {
-        String chave = email.toLowerCase();
+        // valida primeiro (nome/e-mail/matrícula nulos ou vazios -> IllegalArgumentException)
+        Voluntario novo = new Voluntario(nome, email, matricula);
+        String chave = normalizar(novo.getEmail());
         if (voluntarios.containsKey(chave)) {
-            throw new EmailDuplicadoException("E-mail já cadastrado: " + email);
+            throw new EmailDuplicadoException("E-mail já cadastrado: " + novo.getEmail());
         }
-        voluntarios.put(chave, new Voluntario(nome, email, matricula));
+        voluntarios.put(chave, novo);
         return true;
     }
 
@@ -36,10 +38,17 @@ public class SistemaVoluntario {
     }
 
     public Voluntario buscarVoluntario(String email) {
-        Voluntario v = voluntarios.get(email.toLowerCase());
+        if (email == null || email.isBlank()) {
+            throw new IllegalArgumentException("E-mail é obrigatório");
+        }
+        Voluntario v = voluntarios.get(normalizar(email));
         if (v == null) {
             throw new IllegalArgumentException("Voluntário não encontrado: " + email);
         }
         return v;
+    }
+
+    private String normalizar(String email) {
+        return email.trim().toLowerCase(Locale.ROOT);
     }
 }

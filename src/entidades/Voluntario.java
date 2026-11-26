@@ -2,6 +2,7 @@ package entidades;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 public class Voluntario {
@@ -21,7 +22,7 @@ public class Voluntario {
             throw new IllegalArgumentException("Matrícula é obrigatória");
         }
         this.nome = nome;
-        this.email = email;
+        this.email = email.trim();
         this.matricula = matricula;
     }
 
@@ -63,6 +64,6 @@ public class Voluntario {
 
     @Override
     public int hashCode() {
-        return Objects.hash(email.toLowerCase());
+        return Objects.hash(email.toLowerCase(Locale.ROOT));
     }
 }
