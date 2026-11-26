@@ -10,7 +10,7 @@ public class SistemaVoluntario {
     private final Map<String, Voluntario> voluntarios = new HashMap<>();
 
     public boolean cadastrarVoluntario(String nome, String email, String matricula) {
-        // valida primeiro (nome/e-mail/matrícula nulos ou vazios -> IllegalArgumentException)
+
         Voluntario novo = new Voluntario(nome, email, matricula);
         String chave = normalizar(novo.getEmail());
         if (voluntarios.containsKey(chave)) {
