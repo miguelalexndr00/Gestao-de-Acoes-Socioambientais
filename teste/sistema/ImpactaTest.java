@@ -20,8 +20,6 @@ public class ImpactaTest {
         impacta = new Impacta();
     }
 
-    // ---------- Voluntários ----------
-
     @Test
     void deveCadastrarVoluntario() {
         assertTrue(impacta.cadastrarVoluntario("Ana", "ana@email.com", "1"));
@@ -42,8 +40,6 @@ public class ImpactaTest {
         assertEquals("Nome: Ana | Ações: 0 | Pontuação: 0",
                 impacta.exibirVoluntario("ana@email.com"));
     }
-
-    // ---------- Ações ----------
 
     @Test
     void deveGerarIdsSequenciaisParaAcoes() {
@@ -85,8 +81,6 @@ public class ImpactaTest {
     void deveLancarExcecaoParaAcaoInexistente() {
         assertThrows(IllegalArgumentException.class, () -> impacta.exibirDetalhesAcao(99));
     }
-
-    // ---------- Inscrição ----------
 
     @Test
     void deveInscreverVoluntarioEMostrarNosDetalhes() {
@@ -137,8 +131,6 @@ public class ImpactaTest {
         assertThrows(IllegalArgumentException.class, () ->
                 impacta.inscreverVoluntario("ana@email.com", 99));
     }
-
-    // ---------- Pontuação polimórfica e ranking ----------
 
     @Test
     void deveSomarPontuacaoDosTresTiposDeAcao() {
