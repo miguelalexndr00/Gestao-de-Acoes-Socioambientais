@@ -35,7 +35,7 @@ public class SistemaAcao {
     }
 
     public boolean inscreverVoluntario(Voluntario voluntario, int idAcao) {
-        buscarAcao(idAcao).inscrever(voluntario); // lança as exceções de lotada/duplicada
+        buscarAcao(idAcao).inscrever(voluntario); 
         return true;
     }
 
@@ -51,7 +51,6 @@ public class SistemaAcao {
         return a;
     }
 
-    // só consome o ID depois que a ação foi criada com sucesso (sem "buracos" na numeração)
     private int registrar(Acao acao) {
         acoes.put(acao.getId(), acao);
         proximoId++;
